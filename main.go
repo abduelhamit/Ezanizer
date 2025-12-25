@@ -4,6 +4,8 @@ import (
 	"context"
 	"log"
 	"os"
+
+	diyanet "github.com/abduelhamit/DiyanetAwqatSalahAPI"
 )
 
 func main() {
@@ -22,7 +24,7 @@ func main() {
 		log.Fatalln("DIYANET_PASSWORD is not set")
 	}
 
-	config := &Config{
+	config := &diyanet.Config{
 		Email:    email,
 		Password: password,
 	}
