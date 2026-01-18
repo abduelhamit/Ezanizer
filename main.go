@@ -12,7 +12,7 @@ func main() {
 	log.Println("Starting Ezanizer...")
 	defer log.Println("Ezanizer stopped")
 
-	ctx := context.TODO()
+	ctx := context.Background()
 
 	email, ok := os.LookupEnv("DIYANET_EMAIL")
 	if !ok || email == "" {
@@ -45,64 +45,31 @@ func main() {
 	}
 
 	client := config.NewClient(ctx)
-	countries, err := client.GetCountries()
+	country, err := client.GetCountry(countryCode)
 	if err != nil {
-		log.Fatalln("Failed to get countries:", err)
+		log.Fatalln("Failed to get country:", err)
 	}
 
-	var country diyanet.Country
-	found := false
-	for _, c := range countries {
-		if c.Code == countryCode {
-			country = c
-			found = true
-			break
-		}
-	}
-	if !found {
-		log.Fatalf("country with code %q not found", countryCode)
-	}
+	log.Printf("Loaded country: %+v\n", country)
 
-	states, err := client.GetStatesByCountry(country.Id)
+	state, err := country.GetState(stateCode)
 	if err != nil {
-		log.Fatalln("Failed to get states:", err)
+		log.Fatalln("Failed to get state:", err)
 	}
 
-	var state diyanet.State
-	found = false
-	for _, s := range states {
-		if s.Code == stateCode {
-			state = s
-			found = true
-			break
-		}
-	}
-	if !found {
-		log.Fatalf("state with code %q not found", stateCode)
-	}
+	log.Printf("Loaded state: %+v\n", state)
 
-	cities, err := client.GetCitiesByState(state.Id)
+	city, err := state.GetCity(cityCode)
 	if err != nil {
-		log.Fatalln("Failed to get cities:", err)
+		log.Fatalln("Failed to get city:", err)
 	}
 
-	var city diyanet.City
-	found = false
-	for _, c := range cities {
-		if c.Code == cityCode {
-			city = c
-			found = true
-			break
-		}
-	}
-	if !found {
-		log.Fatalf("city with code %q not found", cityCode)
-	}
+	log.Printf("Loaded city: %+v\n", city)
 
-	cityDetail, err := client.GetCityDetail(city.Id)
+	cityDetail, err := city.GetCityDetail()
 	if err != nil {
 		log.Fatalln("Failed to get city detail:", err)
 	}
 
-	log.Printf("City Detail: %+v\n", cityDetail)
+	log.Printf("City detail: %+v\n", cityDetail)
 }
